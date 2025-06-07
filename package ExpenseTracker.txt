@@ -1,0 +1,147 @@
+package ExpenseTracker;
+
+import java.util.ArrayList;
+import java.util.Scanner;
+
+class Expense {
+    String description;
+    String category;
+    double amount;
+    String date; // In format "MM-YYYY"
+
+    public Expense(String description, String category, double amount, String date) {
+        this.description = description;
+        this.category = category;
+        this.amount = amount;
+        this.date = date;
+    }
+
+    public String toString() {
+        return date + " | " + category + ": " + description + " - $" + amount;
+    }
+
+    public String getMonth() {
+        return date.split("-")[0];
+    }
+
+    public String getYear() {
+        return date.split("-")[1];
+    }
+}
+
+public class ExpenseTracker {
+    private static ArrayList<Expense> expenses = new ArrayList<>();
+    private static Scanner scanner = new Scanner(System.in);
+    private static double budget = 0.0;
+
+    public static void main(String[] args) {
+        boolean running = true;
+
+        System.out.println("Welcome to the Expense Tracker!");
+
+        while (running) {
+            displayMenu();
+            int choice = Integer.parseInt(scanner.nextLine());
+
+            switch (choice) {
+                case 1:
+                    addExpense();
+                    break;
+                case 2:
+                    viewExpenses();
+                    break;
+                case 3:
+                    viewMonthlyReport();
+                    break;
+                case 4:
+                    setBudget();
+                    break;
+                case 5:
+                    running = false;
+                    System.out.println("Exiting the Expense Tracker. Goodbye!");
+                    break;
+                default:
+                    System.out.println("Invalid choice. Please select a valid option.");
+            }
+        }
+
+        scanner.close();
+    }
+
+    private static void displayMenu() {
+        System.out.println("\nMenu:");
+        System.out.println("1. Add an expense");
+        System.out.println("2. View all expenses");
+        System.out.println("3. View monthly report");
+        System.out.println("4. Set monthly budget");
+        System.out.println("5. Exit");
+        System.out.print("Choose an option: ");
+    }
+
+    // Add an expense
+    private static void addExpense() {
+        System.out.print("Enter the expense description: ");
+        String description = scanner.nextLine();
+
+        System.out.print("Enter the expense category (e.g., Food, Transport, Entertainment, etc.): ");
+        String category = scanner.nextLine();
+
+        System.out.print("Enter the expense amount: ");
+        double amount = Double.parseDouble(scanner.nextLine());
+
+        System.out.print("Enter the date (MM-YYYY): ");
+        String date = scanner.nextLine();
+
+        Expense newExpense = new Expense(description, category, amount, date);
+        expenses.add(newExpense);
+        System.out.println("Expense added successfully.");
+    }
+
+    // View all expenses
+    private static void viewExpenses() {
+        if (expenses.isEmpty()) {
+            System.out.println("No expenses recorded.");
+        } else {
+            System.out.println("Your expenses:");
+            for (Expense expense : expenses) {
+                System.out.println(expense);
+            }
+        }
+    }
+
+    // View monthly report
+    private static void viewMonthlyReport() {
+        System.out.print("Enter the month (MM-YYYY) to view report: ");
+        String monthYear = scanner.nextLine();
+
+        double totalExpenses = 0.0;
+
+        System.out.println("Expenses for " + monthYear + ":");
+        for (Expense expense : expenses) {
+            if (expense.date.equals(monthYear)) {
+                System.out.println(expense);
+                totalExpenses += expense.amount;
+            }
+        }
+        
+        System.out.println("Total Expenses: " + totalExpenses);
+        
+        if (budget > 0.0) {
+            if (totalExpenses > budget) {
+                System.out.println("You have exceeded your budget by: " + (totalExpenses - budget));
+            } else {
+                System.out.println("You are within your budget of $" + budget + ". You have $"
+                + (budget - totalExpenses) + " remaining.");
+            }
+        } else {
+                System.out.println("No budget set for this month.");
+        }
+    }
+
+    // Set monthly budget
+    private static void setBudget() {
+        System.out.print("Enter your monthly budget: ");
+        budget = Double.parseDouble(scanner.nextLine());
+        System.out.println("Monthly budget set to: " + budget);
+    }
+}
